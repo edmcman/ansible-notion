@@ -8,6 +8,8 @@ This is an Ansible role to install and configure Notion on Linux.  It installs s
 
 I recommend Notion with GNOME Flashback.
 
+Only tested on Ubuntu 22.04.3 LTS.
+
 # Installation
 
 Run: `ansible-playbook --connection=local -i localhost, local.yml --tags all,initial -K`
