@@ -104,11 +104,17 @@
     path: /usr/share/gnome-session/sessions/notion-gnome-flashback.session
     regexp: ';gnome-panel'
 
-- name: Symlink systemd target for notion-gnome-flashback session to gnome-flashback-metacity session
-  file:
-    src: /usr/lib/systemd/user/gnome-session@gnome-flashback-metacity.target.d
+- name: Copy systemd target for notion-gnome-flashback session to gnome-flashback-metacity session
+  copy:
+    src: /usr/lib/systemd/user/gnome-session@gnome-flashback-metacity.target.d/
     dest: /usr/lib/systemd/user/gnome-session@notion-gnome-flashback.target.d
-    state: link
+
+# Enabling indicator-application absorbs system trays!
+- name: Disable indicator-application
+  replace:
+    path: /usr/lib/systemd/user/gnome-session@notion-gnome-flashback.target.d/session.conf
+    regexp: '^Wants=indicator-application\.service'
+    replace: '# indicator-application breaks system tray icons\n# Wants=indicator-application.service'
 
 - name: Install gconf override for notion-gnome-flashback
   copy:
