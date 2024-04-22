@@ -200,13 +200,13 @@
   blockinfile:
     path: /usr/local/etc/notion/cfg_kludges.lua
     prepend_newline: true
-    marker: "-- ansible section"
+    marker: "-- {mark} ansible section"
     block: |
       -- Put stuff in the scratch workspace
       defwinprop {
           class = "Mattermost",
           instance = "mattermost",
-          target = "ChatWS"
+          target = "ChatFrame"
       }
 
       defwinprop {
@@ -215,13 +215,26 @@
           target = "*scratchws*"
       }
 
-      -- Put chrome in the browser workspace
+      -- Put chrome personal in the right frame
       defwinprop {
-          class = "Google-chrome",
-          instance = "google-chrome",
-          target = "BrowserWS"
+          class = "Personal",
+          role = "browser",
+          target = "PersonalBrowserFrame"
       }
 
+      -- Put chrome work in the right frame
+      defwinprop {
+          class = "Work",
+          role = "browser",
+          target = "WorkBrowserFrame"
+      }
+
+      -- Put chrome work email in the right frame
+      defwinprop {
+          class = "WorkEmail",
+          role = "browser",
+          target = "WorkEmailBrowserFrame"
+      }
 
 # stalonetray configuration
 - name: Install stalonetray
