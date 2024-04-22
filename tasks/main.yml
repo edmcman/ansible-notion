@@ -206,7 +206,7 @@
       defwinprop {
           class = "Mattermost",
           instance = "mattermost",
-          target = "*scratchws*"
+          target = "ChatWS"
       }
 
       defwinprop {
