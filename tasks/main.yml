@@ -12,6 +12,10 @@
       - libxrandr-dev
       - libxft-dev
 
+- name: Install rofi launcher
+  apt:
+    pkg: rofi
+
 - name: Check if notion is installed
   stat:
     path: /usr/local/bin/notion
@@ -189,6 +193,28 @@
         dest: /usr/local/etc/notion/cfg_tiling.lua
         # We do want to overwrite the existing file
         force: true
+
+- name: Disable ALTMETA..F4 for ssh
+  block:
+    - lineinfile:
+        path: /usr/local/etc/notion/cfg_bindings.lua
+        regexp: '^\s*bdoc\("Query for host to connect to with SSH\."\),'
+        line: '    -- bdoc("Query for host to connect to with SSH.")'
+        backup: true
+    - lineinfile:
+        path: /usr/local/etc/notion/cfg_bindings.lua
+        regexp: "^\\s*kpress\\(ALTMETA\\.\\.\"F4\", \"mod_query\\.query_ssh\\(_, ':ssh'\\)\"\\),"
+        line: "    -- kpress(ALTMETA..\"F4\", \"mod_query.query_ssh(_, ':ssh')\"),"
+        backup: true
+
+- name: Use ALTMETA..F4 for rofi for .desktop launcher
+  blockinfile:
+    path: /usr/local/etc/notion/cfg_bindings.lua
+    insertafter: 'defbindings\("WMPlex\.toplevel", \{'
+    marker: -- {mark} ANSIBLE MANAGED BLOCK
+    block: |
+      bdoc("Run a desktop launcher"),
+      kpress(ALTMETA.."F4", "mod_query.exec_on_merr(_, 'rofi -show drun')"),
 
 - name: Download linuxbatt script
   get_url:
