@@ -25,9 +25,10 @@
   block:
     - name: Clone notion git
       git:
-        repo: https://github.com/edmcman/notion.git
+        #repo: https://github.com/edmcman/notion.git
+        repo: https://github.com/raboof/notion.git
         dest: /usr/local/src/notion
-        version: sm_snapshot_test
+        version: master
         single_branch: true
     - name: Build and install notion
       community.general.make:
