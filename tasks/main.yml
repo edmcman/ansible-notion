@@ -28,7 +28,7 @@
         #repo: https://github.com/edmcman/notion.git
         repo: https://github.com/raboof/notion.git
         dest: /usr/local/src/notion
-        version: master
+        #version: sm_snapshot_test
         single_branch: true
     - name: Build and install notion
       community.general.make:
