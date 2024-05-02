@@ -23,25 +23,18 @@
 
 - name: Build notion
   block:
-    - name: Create temporary directory
-      tempfile:
-        state: directory
-        prefix: ansible.notion.build
-      register: tempdir
     - name: Clone notion git
       git:
-        repo: https://github.com/raboof/notion.git
-        dest: "{{ tempdir.path }}"
+        repo: https://github.com/edmcman/notion.git
+        dest: /usr/local/src/notion
+        version: sm_snapshot_test
+        single_branch: true
     - name: Build and install notion
       community.general.make:
-        chdir: "{{ tempdir.path }}"
+        chdir: /usr/local/src/notion
         targets:
           - all
           - install
-    - name: Remove temporary directory
-      file:
-        state: absent
-        path: "{{ tempdir.path }}"
   # when /usr/local/bin/notion doesn't exist
   when: not (notionbin.stat.isreg is defined and notionbin.stat.isreg)
 
@@ -228,6 +221,12 @@
     prepend_newline: true
     marker: "-- {mark} ansible section"
     block: |
+      -- Put stalonetray in systray
+      defwinprop {
+          class = "stalonetray",
+          statusbar = "systray"
+      }
+
       -- Put stuff in the scratch workspace
       defwinprop {
           class = "Mattermost",
