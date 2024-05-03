@@ -210,6 +210,13 @@
       bdoc("Run a desktop launcher"),
       kpress(ALTMETA.."F4", "mod_query.exec_on_merr(_, 'rofi -show drun')"),
 
+- name: Add frame rename option to Frame context
+  lineinfile:
+    path: /usr/local/etc/notion/cfg_bindings.lua
+    insertafter: '.*menuentry\("Window info",'
+    line: menuentry("Rename frame", "mod_query.query_renameframe(_)"),
+    backup: true
+
 - name: Download linuxbatt script
   get_url:
     url: https://github.com/raboof/notion/raw/main/contrib/statusd/statusd_linuxbatt.lua
