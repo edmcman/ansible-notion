@@ -264,8 +264,8 @@
 
       -- Put chrome work email in the right frame
       defwinprop {
-          class = "WorkEmail",
-          role = "browser",
+          class = "Work",
+          role = "pop-up",
           target = "WorkEmailBrowserFrame"
       }
 
