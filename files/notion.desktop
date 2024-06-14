@@ -4,4 +4,8 @@ Type=Application
 Name=Notion
 Comment=Notion
 TryExec=notion
-Exec=notion
+#Exec=notion
+# This technically has nothing to do with notion, but I want there to be a login
+# session so that dorothy works properly:
+# https://github.com/bevry/dorothy/issues/220
+Exec=bash -l -c notion

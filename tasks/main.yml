@@ -12,6 +12,10 @@
       - libxrandr-dev
       - libxft-dev
 
+- name: Install rofi launcher
+  apt:
+    pkg: rofi
+
 - name: Check if notion is installed
   stat:
     path: /usr/local/bin/notion
@@ -19,25 +23,19 @@
 
 - name: Build notion
   block:
-    - name: Create temporary directory
-      tempfile:
-        state: directory
-        prefix: ansible.notion.build
-      register: tempdir
     - name: Clone notion git
       git:
-        repo: https://github.com/raboof/notion.git
-        dest: "{{ tempdir.path }}"
+        repo: https://github.com/edmcman/notion.git
+        #repo: https://github.com/raboof/notion.git
+        dest: /usr/local/src/notion
+        version: sm_snapshot_test
+        single_branch: true
     - name: Build and install notion
       community.general.make:
-        chdir: "{{ tempdir.path }}"
+        chdir: /usr/local/src/notion
         targets:
           - all
           - install
-    - name: Remove temporary directory
-      file:
-        state: absent
-        path: "{{ tempdir.path }}"
   # when /usr/local/bin/notion doesn't exist
   when: not (notionbin.stat.isreg is defined and notionbin.stat.isreg)
 
@@ -190,6 +188,35 @@
         # We do want to overwrite the existing file
         force: true
 
+- name: Disable ALTMETA..F4 for ssh
+  block:
+    - lineinfile:
+        path: /usr/local/etc/notion/cfg_bindings.lua
+        regexp: '^\s*bdoc\("Query for host to connect to with SSH\."\),'
+        line: '    -- bdoc("Query for host to connect to with SSH.")'
+        backup: true
+    - lineinfile:
+        path: /usr/local/etc/notion/cfg_bindings.lua
+        regexp: "^\\s*kpress\\(ALTMETA\\.\\.\"F4\", \"mod_query\\.query_ssh\\(_, ':ssh'\\)\"\\),"
+        line: "    -- kpress(ALTMETA..\"F4\", \"mod_query.query_ssh(_, ':ssh')\"),"
+        backup: true
+
+- name: Use ALTMETA..F4 for rofi for .desktop launcher
+  blockinfile:
+    path: /usr/local/etc/notion/cfg_bindings.lua
+    insertafter: 'defbindings\("WMPlex\.toplevel", \{'
+    marker: -- {mark} ANSIBLE MANAGED BLOCK
+    block: |
+      bdoc("Run a desktop launcher"),
+      kpress(ALTMETA.."F4", "mod_query.exec_on_merr(_, 'rofi -show drun')"),
+
+- name: Add frame rename option to Frame context
+  lineinfile:
+    path: /usr/local/etc/notion/cfg_bindings.lua
+    insertafter: '.*menuentry\("Window info",'
+    line: menuentry("Rename frame", "mod_query.query_renameframe(_)"),
+    backup: true
+
 - name: Download linuxbatt script
   get_url:
     url: https://github.com/raboof/notion/raw/main/contrib/statusd/statusd_linuxbatt.lua
@@ -200,13 +227,19 @@
   blockinfile:
     path: /usr/local/etc/notion/cfg_kludges.lua
     prepend_newline: true
-    marker: "-- ansible section"
+    marker: "-- {mark} ansible section"
     block: |
+      -- Put stalonetray in systray
+      defwinprop {
+          class = "stalonetray",
+          statusbar = "systray"
+      }
+
       -- Put stuff in the scratch workspace
       defwinprop {
           class = "Mattermost",
           instance = "mattermost",
-          target = "*scratchws*"
+          target = "ChatFrame"
       }
 
       defwinprop {
@@ -215,13 +248,26 @@
           target = "*scratchws*"
       }
 
-      -- Put chrome in the browser workspace
+      -- Put chrome personal in the right frame
       defwinprop {
-          class = "Google-chrome",
-          instance = "google-chrome",
-          target = "BrowserWS"
+          class = "Personal",
+          role = "browser",
+          target = "PersonalBrowserFrame"
       }
 
+      -- Put chrome work in the right frame
+      defwinprop {
+          class = "Work",
+          role = "browser",
+          target = "WorkBrowserFrame"
+      }
+
+      -- Put chrome work email in the right frame
+      defwinprop {
+          class = "Work",
+          role = "pop-up",
+          target = "WorkEmailBrowserFrame"
+      }
 
 # stalonetray configuration
 - name: Install stalonetray
