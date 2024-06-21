@@ -257,7 +257,7 @@
 
       -- Put chrome work in the right frame
       defwinprop {
-          class = "Work",
+          class = "Google-chrome",
           role = "browser",
           target = "WorkBrowserFrame"
       }
