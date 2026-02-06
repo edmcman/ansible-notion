@@ -237,24 +237,23 @@
 
       -- Put stuff in the scratch workspace
       defwinprop {
-          class = "Mattermost",
-          instance = "mattermost",
-          target = "ChatFrame"
-      }
-
-      defwinprop {
           class = "ZSTray",
           instance = "ZSTray",
           target = "*scratchws*"
       }
 
+      --[[
+      defwinprop {
+          class = "Mattermost",
+          instance = "mattermost",
+          target = "ChatFrame"
+      }
       -- Put chrome personal in the right frame
       defwinprop {
           class = "Personal",
           role = "browser",
           target = "PersonalBrowserFrame"
       }
-
       -- Put chrome work in the right frame
       defwinprop {
           class = "Google-chrome",
@@ -266,7 +265,6 @@
           role = "browser",
           target = "WorkBrowserFrame"
       }
-
       -- Put chrome work email in the right frame
       defwinprop {
           class = "Google-chrome",
@@ -278,6 +276,7 @@
           role = "pop-up",
           target = "WorkEmailBrowserFrame"
       }
+      ]]--
 
 # stalonetray configuration
 - name: Install stalonetray
